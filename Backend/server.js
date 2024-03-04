@@ -5,7 +5,7 @@ const bodyparser = require('body-parser');
 app.use(express.json());
 
 
-mongoose.connect('mongodb://localhost:27017/project_ark');
+mongoose.connect('mongodb+srv://kadiroumaima:OUMSdreams19@cluster0.zafxu7g.mongodb.net/');
 
 const products_routes = require('./routes/productRoutes');
 

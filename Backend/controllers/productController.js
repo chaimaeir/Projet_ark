@@ -29,6 +29,7 @@ const createProduct = ((req, res) => {
         name: req.body.name,
         price: req.body.price,
         description: req.body.description,
+        category: req.body.category,
         quantity: req.body.quantity
     })
     newProduct
@@ -37,9 +38,31 @@ const createProduct = ((req, res) => {
         .catch((err)=>res.status(404).json({message : err})); 
 });
 
+const searchProduct = ((req,res)=>{
+    product.aggregate([
+        {
+        $search: {
+            index: 'default',
+            text: {
+              query: req.params.keyword,
+              path: ["name", "category"]
+            }
+          }
+        }]).then((result)=>{
+            if(result.length > 0)
+                res.status(200).json({product : result});
+            else
+                res.status(404).json({message : 'product not found'})
+        }).catch((err)=>{
+            res.status(500).json({message : err.message});
+        });
+    
+});
+        
 
 module.exports = {
     getProducts,
     getProduct,
-    createProduct
+    createProduct,
+    searchProduct
 }
