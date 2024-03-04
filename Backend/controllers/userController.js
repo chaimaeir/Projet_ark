@@ -38,7 +38,7 @@ const Register = async (req, res) => {
         await user.save(); 
         
         // Generate JWT token for authentication
-        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET||'npmrundev', { expiresIn: "1h" }); 
+        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" }); 
         
         // Send response with user details and token
         res.status(201).json({ username: user.username, email, token }); 
@@ -65,7 +65,7 @@ const Login = async (req, res) => {
         }
   
         // Generate JWT token for authentication
-        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET||'npmrundev', { expiresIn: "1h" });
+        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.status(201).json({ username: user.username, email: user.email, token });
     } catch (error) {
         console.error(error);
@@ -122,18 +122,18 @@ const requestReset = async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER||'t80829842@gmail.com',
-                pass: process.env.EMAIL_PASS||'fzbq scpx hhuf hbfo'
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
 
         // Configure email options
         const mailOptions = {
-            from: process.env.EMAIL_USER||'t80829842@gmail.com',
+            from: process.env.EMAIL_USER,
             to: user.email,
             subject: 'Password Reset',
             text: `You have requested the reset of the password for your account.\n\n
-                   Please click on the following link: http://localhost:3000/api/password/reset/verify/${code}\n\n
+                   Please click on the following link: http://localhost:3000/users/api/password/reset/verify/${code}\n\n
                    The link will expire in 5 minutes.\n\n
                    If you did not request this, please ignore this email and your password will remain unchanged.\n`
         };
@@ -172,32 +172,35 @@ const validateReset = async (req, res) => {
 // Function to reset user's password
 const passwordReset = async (req, res) => {
     try {
-        const code = req.params.code;
-        const { password } = req.body;
-
-        // Find user by reset password code and check expiration time
-        const user = await User.findOne({
-            resetPasswordCode: code,
-            resetPasswordExpires: { $gt: Date.now() }
-        });
-
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired token' });
-        }
-
-        // Hash the new password and update user's password in the database
-        const hashedPassword = await bcrypt.hash(password, 10);
-        user.password = hashedPassword;
-        user.resetPasswordCode = null;
-        user.resetPasswordExpires = null;
-        await user.save();
-
-        res.status(200).json({ message: 'Password reset successfully' });
+      const code = req.params.code;
+      const newPassword = req.body.password;
+  
+      // Find user by reset password code and check expiration time
+      const user = await User.findOne({
+        resetPasswordCode: code,
+        resetPasswordExpires: { $gt: Date.now() }
+      });
+  
+      if (!user) {
+        return res.status(400).json({ message: 'Invalid or expired token' });
+      }
+  
+      // Hash the new password and update user's password in the database
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      user.resetPasswordCode = null;
+      user.resetPasswordExpires = null;
+      await user.save();
+  
+      // Generate JWT token for authentication
+      const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  
+      // Send response with user details and token
+      res.status(200).json({ username: user.username, email: user.email, token });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-}
-
+  };
 // Export all functions for use in other modules
 module.exports = { Register, Login, findUser, getUsers, requestReset, validateReset, passwordReset };
