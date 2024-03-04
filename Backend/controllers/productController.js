@@ -1,18 +1,27 @@
 const product = require('../models/Product');
+var ObjectId = require('mongodb').ObjectId; 
+
 
 const getProducts = ((req,res) => {
-    const products = product
+     product
         .find()
-        .then(()=>res.status(200).send(products))
+        .then((result)=>res.status(200).send(result))
         .catch((err)=>res.status(404).json({message : err}));
 });
 
-const getProduct = ((req,res)=>{
+const getProduct = (async (req,res)=>{
     const id = req.params.productID;
-    product
-        .findOne({"_id" : ObjectId(id) })  
-        .then(()=>res.status(200).json({product: product}))   
-        .catch((err)=>res.status(404).json({message : err})); 
+    try {
+        const result = await product.findOne({"_id" : new  ObjectId(id) })  
+            if(result) {
+                res.status(200).json({ product: result });
+            } else {
+                res.status(404).json({ message: 'Product not found' });
+            }   
+    } catch (error) {
+        res.status(500).json({message : error.message})
+    }
+    
 });
 
 const createProduct = ((req, res) => {
@@ -28,11 +37,9 @@ const createProduct = ((req, res) => {
         .catch((err)=>res.status(404).json({message : err})); 
 });
 
+
 module.exports = {
     getProducts,
     getProduct,
     createProduct
 }
-
-    
-
