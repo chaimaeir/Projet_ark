@@ -26,5 +26,8 @@ router.get('/api/password/reset/verify/:code', controllers.validateReset);
 // Route to reset password
 router.post('/api/password/reset/:code', controllers.passwordReset);
 
+
+
+
 // Exporting the router
 module.exports = router;

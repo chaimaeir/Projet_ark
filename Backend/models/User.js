@@ -6,7 +6,9 @@ const userSchema=new  mongoose.Schema({
     password:{type:String,required:true ,min:6},
     resetPasswordCode: {type: String,default: ''},
     resetPasswordExpires: {type: Date,default: Date.now()},
-    role: { type : String , enum: ['admin', 'user' ],default: 'user' }
+    role: { type : String , enum: ['admin', 'user' ],default: 'user' },
+    oauthID: {type:String},
+    displayName: {type:String}
 },{
     timestamps: true 
 });

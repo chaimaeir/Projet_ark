@@ -1,7 +1,7 @@
 module.exports = {
     isAdmin: (req, res, next) => {
-      const isAdmin = req.user && req.user.isAdmin;
-      
+      const userRole = req.user && req.user.role;
+      const isAdmin = userRole === 'admin';
       if (isAdmin) {
         return next();
       }
