@@ -11,6 +11,9 @@ router.post("/register", controllers.Register);
 // Route for user login
 router.post("/login", controllers.Login);
 
+// Route for user Logout
+router.post('/logout', controllers.Logout);
+
 // Route to find a specific user by their ID
 router.get("/:userId", controllers.findUser);
 

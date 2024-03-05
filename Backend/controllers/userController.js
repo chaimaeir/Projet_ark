@@ -73,6 +73,23 @@ const Login = async (req, res) => {
     }
 };
 
+const Logout = async (req, res) => {
+    try {
+      const token = req.headers.authorization.split(" ")[1]; // Assuming token is in the Authorization header
+      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  
+      if (!decodedToken) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+  
+      // Set token expiration to -1 or remove it from client-side storage
+      res.status(200).json({ message: "Logged out", token: null });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error logging out", error: error.message });
+    }
+  };
+
 // Function to find a user by ID
 const findUser = async (req, res) => {
     const userId = req.params.userId;
@@ -203,4 +220,4 @@ const passwordReset = async (req, res) => {
     }
   };
 // Export all functions for use in other modules
-module.exports = { Register, Login, findUser, getUsers, requestReset, validateReset, passwordReset };
+module.exports = { Register, Login, Logout,findUser, getUsers, requestReset, validateReset, passwordReset};
