@@ -1,10 +1,10 @@
 const express=require( 'express')
-const connectDB = require('./config/db');
+ require('./config/db');
 
 const userRoute= require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
-// Connect to MongoDB
-connectDB();
+
+
 
 
 
