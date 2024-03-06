@@ -2,7 +2,7 @@ const express=require( 'express')
  require('./config/db');
 
 const userRoute= require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes');
+const productRoute = require('./routes/productRoutes');
 
 
 
@@ -12,7 +12,7 @@ const  app = express();
 app.use(express.json());
 
 app.use('/users',userRoute)
-app.use('/users' ,productsRoutes)
+app.use('/users' ,productsRoute)
 
 
 const port= process.env.PORT ||3000
