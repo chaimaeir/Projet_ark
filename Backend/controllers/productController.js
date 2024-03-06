@@ -35,7 +35,7 @@ const createProduct = ((req, res) => {
     newProduct
         .save()
         .then(()=>res.status(200).json({message: 'product added to database'}))   
-        .catch((err)=>res.status(404).json({message : err})); 
+        .catch((err)=>res.status(404).json({message : err.message})); 
 });
 
 const searchProduct = ((req,res)=>{
@@ -58,11 +58,32 @@ const searchProduct = ((req,res)=>{
         });
     
 });
-        
+ 
+const updateProduct = ((req,res)=>{
+    const id = req.params.productID;
+    product
+        .findOneAndUpdate({"_id" : new  ObjectId(id) },{$set: {quantity: req.body.quantity}})
+        .then((result)=>res.status(200).json({message : result}))
+        .catch((err)=>res.status(500).json({message : err.message}))
+});
+
+const deleteProduct = ((req,res)=>{
+    const id = req.params.productID;
+    product
+        .findOneAndDelete({"_id" : new  ObjectId(id) })
+        .then((result)=>{
+            if(result)
+                res.status(200).json({message : 'product deleted'});
+            else
+                res.status(404).json({message: 'product not found'})})
+        .catch((err)=>res.status(500).json({message : err.message}))
+});
 
 module.exports = {
     getProducts,
     getProduct,
     createProduct,
-    searchProduct
+    searchProduct,
+    updateProduct,
+    deleteProduct
 }
