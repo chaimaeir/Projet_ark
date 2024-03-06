@@ -5,7 +5,7 @@ const controllers = require('../controllers/userController');
 const router = express.Router();
 
 //route for updating user
-router.put('/:userId' ,controllers.updateUser)
+router.put('/:userId' ,controllers.updateUser) 
 
 //route for deleting user 
 router.delete('/:userId', controllers.deleteUser)
