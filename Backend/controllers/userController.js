@@ -270,4 +270,3 @@ const deleteUser = async  (req,res)=> {
 }
 // Export all functions for use in other modules
 module.exports = { Register, Login, Logout,findUser, getUsers, requestReset, validateReset, passwordReset, updateUser, deleteUser};
-
