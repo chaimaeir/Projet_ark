@@ -5,12 +5,15 @@ const passport = require('./config/passport');
 require('dotenv').config()
 const userRoute= require('./routes/userRoutes')
 const authRouter=require("./routes/authRoutes")
+const productRoute = require('./routes/productRoutes')
 
 const  app = express();
 app.use(express.json())
 
-app.use('/users',userRoute)
+app.use('/users',userRoute);
+app.use('/products',productRoute);
 app.use('/',authRouter);
+
 app.use(session({
   resave: false,
   saveUninitialized: false,
@@ -21,6 +24,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-const port=process.env.PORT
+const port=process.env.PORT || 3000
+
 
 app.listen(port, ()=>{console.log(`Server is running on ${port}`)})
