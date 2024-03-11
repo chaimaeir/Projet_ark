@@ -39,7 +39,7 @@ const Register = async (req, res) => {
         await user.save(); 
         
         // Generate JWT token for authentication
-        const token = jwt.sign({ username: user.username,email: user.email,role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" }); 
+         const token = jwt.sign({ email: user.email,role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
         
         // Send response with user details and token
         res.status(201).json({ username: user.username, email, token }); 
@@ -66,7 +66,7 @@ const Login = async (req, res) => {
         }
   
         // Generate JWT token for authentication
-        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ email: user.email,role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.status(201).json({ username: user.username, email: user.email, token });
     } catch (error) {
         console.error(error);
@@ -227,20 +227,19 @@ const updateUser = async (req,res)=>{
     const userId = req.params.userId;
     const {username,email,password} = req.body;
     
-    const updateData ={username,email,password} ; // Data to update
+    const updateData ={username,email,password} ; 
     if(password){
-        const hashedPassword= await bcrypt.hash(updateData.password,10);// Hash the password before saving it
+        const hashedPassword= await bcrypt.hash(updateData.password,10);
         updateData.password = hashedPassword;
     }
 
-    // Find and update user in the database
     const updatedUser = await User.findByIdAndUpdate({ _id: userId }, updateData, { new: true });
 
     if (!updatedUser) {
         return res.status(404).json({ message: 'User not found' });
     }
 
-    res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({ message: 'User updated successfully'});
 
   }catch(error){
     console.error('Error updating user:', error);

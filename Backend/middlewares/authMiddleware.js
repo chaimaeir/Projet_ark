@@ -1,10 +1,21 @@
-module.exports = {
-    isAdmin: (req, res, next) => {
-      const userRole = req.user && req.user.role;
-      const isAdmin = userRole === 'admin';
-      if (isAdmin) {
-        return next();
-      }
-      return res.status(403).json({ message: 'Forbidden. Admin privileges required.' });
-    },
-  };
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
+
+  jwt.verify(token,process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+
+    req.user = user;
+    next();
+  });
+};
+module.exports = authenticateToken;
