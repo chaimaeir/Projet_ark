@@ -2,6 +2,7 @@ const express = require('express');
 const controllers = require('../controllers/userController'); 
 const authenticateToken= require('../middlewares/authMiddleware');
 
+
 // Creating an instance of Express router
 const router = express.Router();
 
@@ -28,8 +29,17 @@ router.get('/api/password/reset/verify/:code', controllers.validateReset);
 // Route to reset password
 router.post('/api/password/reset/:code', controllers.passwordReset);
 
+//route for updating user
+router.put('/:userId' ,controllers.updateUser) 
+
+//route for deleting user 
+router.delete('/:userId', controllers.deleteUser)
 
 
 
 // Exporting the router
 module.exports = router;
+
+
+
+
