@@ -1,6 +1,6 @@
 const express = require('express'); 
 const controllers = require('../controllers/userController'); 
-const authMiddleware = require('../middlewares/authMiddleware');
+const authenticateToken= require('../middlewares/authMiddleware');
 
 // Creating an instance of Express router
 const router = express.Router();
@@ -18,8 +18,7 @@ router.post('/logout', controllers.Logout);
 router.get("/:userId", controllers.findUser);
 
 // Route to get all users, accessible only to admin users
-router.get("/", authMiddleware.isAdmin, controllers.getUsers);
-
+router.get("/",authenticateToken, controllers.getUsers);
 // Route to request password reset
 router.post('/password/reset', controllers.requestReset);
 

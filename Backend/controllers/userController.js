@@ -38,7 +38,7 @@ const Register = async (req, res) => {
         await user.save(); 
         
         // Generate JWT token for authentication
-        const token = jwt.sign({ username: user.username,email: user.email,role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" }); 
+        const token = jwt.sign({ email: user.email,role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
         
         // Send response with user details and token
         res.status(201).json({ username: user.username, email, token }); 
@@ -65,7 +65,7 @@ const Login = async (req, res) => {
         }
   
         // Generate JWT token for authentication
-        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ email: user.email,role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.status(201).json({ username: user.username, email: user.email, token });
     } catch (error) {
         console.error(error);
@@ -107,16 +107,21 @@ const findUser = async (req, res) => {
 }
 
 // Function to get all users
-const getUsers = async (req, res) => {
-    try {
-        // Find all users in the database
-        const users = await User.find();
-        res.status(200).json(users);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Server Error" });
+const getUsers = (req, res) => {
+    const { role } = req.user;
+  
+    // Only admins can see all users
+    if (role === 'admin') {
+      User.find()
+        .then(users => res.json(users))
+        .catch(err => res.status(500).json({ message: err.message }));
+    } else {
+      // Non-admins can only see their own user profile
+      User.findById(req.user.id)
+        .then(user => res.json(user))
+        .catch(err => res.status(500).json({ message: err.message }));
     }
-}
+  };
 
 // Function to request a password reset
 const requestReset = async (req, res) => {
